@@ -16,7 +16,7 @@ export default function EditProfile() {
                     <ChevronLeft size={18} />
                     Back
                 </button>
-                <h1 className='text-2xl font-bold text-white'>
+                <h1 className='text-2xl font-bold text-white hidden md:block'>
                     Edit Profile
                 </h1>
                 <button className='flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-700 text-white hover:bg-emerald-600 transition-colors duration-200'>
@@ -24,6 +24,10 @@ export default function EditProfile() {
                     Save Changes
                 </button>
             </div>
+
+            <h1 className='text-2xl font-bold text-white block md:hidden pb-4'>
+                Edit Profile
+            </h1>
 
             <div className='grid grid-cols-1 md:grid-cols-4 gap-6'>
                 {/* Profile Picture Section */}
@@ -120,7 +124,7 @@ export default function EditProfile() {
                     </div>
 
                     {/* Social Links Section */}
-                    <div className='border border-[#1d1f29] bg-[#1a1c27] rounded-lg p-5'>
+                    <div className='border border-[#1d1f29] bg-[#1a1c27] rounded-lg p-5 mb-16 md:mb-0'>
                         <h3 className='text-lg font-semibold text-white mb-6'>Social Links</h3>
                         <div className='space-y-4'>
                             <div>

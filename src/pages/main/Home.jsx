@@ -178,7 +178,7 @@ export default function Home() {
             ) : (
                 <ul className='space-y-4 pr-2'>
                     {tasks.map(task => (
-                        <TaskItem task={task} />
+                        <TaskItem key={task.id} task={task} />
                     ))}
                 </ul>
             )}

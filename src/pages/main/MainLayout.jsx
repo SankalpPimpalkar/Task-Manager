@@ -1,8 +1,10 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../../components/Sidebar'
+import { useSelector } from 'react-redux'
 
 export default function MainLayout() {
+
     return (
         <div className='w-full min-h-dvh bg-[#030712] text-white'>
             <div className='container mx-auto md:p-5'>
