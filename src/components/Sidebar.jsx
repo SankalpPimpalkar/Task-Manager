@@ -13,6 +13,8 @@ export default function Sidebar() {
     const user = useSelector(state => state.auth.user);
     const isLoading = useSelector(state => state.auth.isLoading)
     const tasksCount = useSelector(state => state.task.count)
+    const projectsCount = useSelector(state => state.project.count)
+    const assignedTasksCount = useSelector(state => state.task.assigned.length)
 
     // Navigation items data
     const navItems = [
@@ -29,7 +31,7 @@ export default function Sidebar() {
             path: "/assigned",
             icon: ClipboardList,
             label: "Assigned",
-            count: user?.assigned_tasks.length,
+            count: user?.assigned_tasks?.length,
             iconColor: "text-purple-400",
             countColor: "bg-purple-500/10 text-purple-400",
             activeBg: "bg-purple-500/10"
@@ -38,13 +40,13 @@ export default function Sidebar() {
             path: "/projects",
             icon: Folder,
             label: "Projects",
-            count: user?.projects?.length,
+            count: projectsCount,
             iconColor: "text-cyan-400",
             countColor: "bg-cyan-500/10 text-cyan-400",
             activeBg: "bg-cyan-500/10"
         },
         {
-            path: "/profile",
+            path: `/profile/${user?.$id}`,
             icon: UserRound,
             label: "Profile",
             iconColor: "text-blue-400",
@@ -139,10 +141,15 @@ export default function Sidebar() {
                                                     } group-hover:${item.iconColor.replace('400', '300') || 'text-white'}`} />
                                                 <span>{item.label}</span>
                                             </div>
-                                            <span className={`ml-auto ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor
-                                                } text-xs px-2 py-1 rounded-full`}>
-                                                {item.count}
-                                            </span>
+
+                                            {
+                                                item.count != 0 && (
+                                                    <span className={`ml-auto ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor
+                                                        } text-xs px-2 py-1 rounded-full`}>
+                                                        {item.count}
+                                                    </span>
+                                                )
+                                            }
                                         </Link>
                                     </li>
                                 ))}
@@ -181,9 +188,13 @@ export default function Sidebar() {
                             >
                                 <item.icon className={`w-5 h-5 mb-1 ${isActive(item.path) ? 'text-white' : item.iconColor} group-hover:${item.iconColor.replace('400', '300') || 'text-white'}`} />
                                 <span className='text-xs'>{item.label}</span>
-                                <span className={`absolute top-1 right-6 ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor} text-xs px-1.5 py-0.5 rounded-full`}>
-                                    {item.count}
-                                </span>
+                                {
+                                    item.count != 0 && (
+                                        <span className={`absolute top-1 right-6 ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor} text-xs px-1.5 py-0.5 rounded-full`}>
+                                            {item.count}
+                                        </span>
+                                    )
+                                }
                             </Link>
                         </li>
                     ))}

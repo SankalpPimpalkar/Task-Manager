@@ -13,13 +13,13 @@ export default function TaskItem({ task }) {
     return (
         <Link to={`/tasks/${task?.$id}`} className='border border-[#1d1f29] bg-[#1a1c27] rounded-lg p-4 hover:border-[#2a2d3a] transition-colors duration-200 relative block'>
             <div className='flex justify-between items-start mb-2'>
-                <h4 className='text-lg font-semibold text-white'>
+                <h4 className='text-xl font-semibold text-white'>
                     {task.title}
                 </h4>
                 {/* You can pass MenuBar as a prop if needed */}
             </div>
 
-            <p className='text-[#d1d5db] text-sm mb-4'>
+            <p className='text-[#b5b7ba] text-sm mb-4'>
                 {task.description}
             </p>
 
@@ -29,7 +29,7 @@ export default function TaskItem({ task }) {
                 {task.project && (
                     <div className='flex items-center text-xs text-purple-400 bg-purple-400/10 px-2.5 py-1 rounded-full'>
                         <Folder size={14} className='mr-1' />
-                        {task.project.name}
+                        {task.project.title}
                     </div>
                 )}
 

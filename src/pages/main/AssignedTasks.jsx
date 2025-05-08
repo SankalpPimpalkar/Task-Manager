@@ -1,23 +1,22 @@
 import { useState, useEffect } from 'react'
 import TaskSkeleton from '../../components/skeletons/TaskSkeleton'
 import TaskItem from '../../components/TaskItem'
-import { GET_ALL_TASKS } from '../../appwrite/database'
+import { GET_ALL_ASSIGNED_TASKS } from '../../appwrite/database'
 import { useDispatch } from 'react-redux'
-import { loadTasks } from '../../redux/slices/task.slice'
+import { loadAssignedTasks } from '../../redux/slices/task.slice'
 
-
-export default function Home() {
+export default function AssignedTasks() {
     const [isLoading, setIsLoading] = useState(true)
     const [tasks, setTasks] = useState([])
     const dispatch = useDispatch()
 
     const fetchTasks = async () => {
         try {
-            const resp = await GET_ALL_TASKS()
+            const resp = await GET_ALL_ASSIGNED_TASKS()
             if (resp) {
                 console.log(resp)
                 setTasks(resp)
-                dispatch(loadTasks(resp))
+                dispatch(loadAssignedTasks(resp))
             }
 
         } catch (error) {
@@ -36,7 +35,7 @@ export default function Home() {
             {/* Fixed Header */}
             <div className='pb-6'>
                 <h1 className='text-2xl font-bold text-white'>
-                    All Tasks
+                    Assigned Tasks
                 </h1>
             </div>
 

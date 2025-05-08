@@ -7,6 +7,9 @@ import EditProfile from './pages/main/EditProfile'
 import AuthLayout from './pages/auth/AuthLayout'
 import Register from './pages/auth/Register'
 import SignIn from './pages/auth/SignIn'
+import AssignedTasks from './pages/main/AssignedTasks'
+import Projects from './pages/main/Projects'
+import Project from './pages/main/Project'
 
 export default function App() {
   return (
@@ -18,8 +21,11 @@ export default function App() {
 
       <Route path='/' element={<MainLayout />}>
         <Route path='' element={<Home />} />
+        <Route path='assigned' element={<AssignedTasks />} />
+        <Route path='projects' element={<Projects />} />
+        <Route path='projects/:id' element={<Project />} />
 
-        <Route path='profile' element={<Profile />} />
+        <Route path='profile/:id' element={<Profile />} />
         <Route path='edit-profile' element={<EditProfile />} />
       </Route>
     </Routes>

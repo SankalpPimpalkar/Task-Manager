@@ -1,6 +1,24 @@
 import { account, database } from "./config";
 import appwriteConfig from "./config";
-import { ID, Query } from "appwrite";
+import { Query } from "appwrite";
+
+export async function GET_USER_BY_ID(id) {
+    try {
+
+        const user = await database.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.usersCollectionId,
+            id
+        )
+
+        console.log("SUCCESS | GET_USER_BY_ID: ", user)
+        return user
+
+    } catch (error) {
+        console.log("ERROR | GET_USER_BY_ID: ", error.message)
+        throw error
+    }
+}
 
 export async function GET_USER_BY_NAME_OR_EMAIL_OR_USERNAME(keyword) {
     try {
@@ -33,6 +51,49 @@ export async function GET_ALL_TASKS() {
 
         const user = await account.get()
 
+        const projects = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.projectsCollectionId,
+            [
+                Query.contains('members_id', user.$id)
+            ]
+        );
+
+        console.log("PROJECTS", projects)
+
+        if (!projects.total) {
+            return []
+        }
+
+        const projectIds = projects.documents.map(project => project.$id)
+
+        const tasks = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.tasksCollectionId,
+            [
+                Query.equal('project', projectIds)
+            ]
+        );
+
+
+        if (tasks.total) {
+            console.log("SUCCESS | GET_ALL_TASKS: ", tasks)
+            return tasks.documents
+        }
+
+        throw "Failed to get all tasks"
+
+    } catch (error) {
+        console.log("ERROR | GET_ALL_TASKS: ", error.message)
+        throw error
+    }
+}
+
+export async function GET_ALL_ASSIGNED_TASKS() {
+    try {
+
+        const user = await account.get()
+
         const tasks = await database.listDocuments(
             appwriteConfig.databaseId,
             appwriteConfig.tasksCollectionId,
@@ -43,17 +104,41 @@ export async function GET_ALL_TASKS() {
                 ])
             ]
         );
-        
+
 
         if (tasks.total) {
-            console.log("SUCCESS | GET_ALL_TASKS: ", tasks)
+            console.log("SUCCESS | GET_ALL_ASSIGNED_TASKS: ", tasks)
             return tasks.documents
         }
 
-        throw "Failed to get tasks"
+        throw "Failed to get assigned tasks"
 
     } catch (error) {
-        console.log("ERROR | GET_ALL_TASKS: ", error.message)
+        console.log("ERROR | GET_ALL_ASSIGNED_TASKS: ", error.message)
+        throw error
+    }
+}
+
+export async function GET_ALL_TASKS_BY_PROJECT(projectId) {
+    try {
+
+        const tasks = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.tasksCollectionId,
+            [
+                Query.equal('project', projectId)
+            ]
+        );
+
+        if (tasks.total) {
+            console.log("SUCCESS | GET_ALL_TASKS_BY_PROJECT: ", tasks)
+            return tasks.documents
+        }
+
+        throw "Failed to get tasks by project"
+
+    } catch (error) {
+        console.log("ERROR | GET_ALL_TASKS_BY_PROJECT: ", error.message)
         throw error
     }
 }
@@ -76,6 +161,28 @@ export async function GET_TASK_BY_ID(taskId) {
 
     } catch (error) {
         console.log("ERROR | GET_TASK_BY_ID: ", error.message)
+        throw error
+    }
+}
+
+export async function GET_PROJECTS_BY_MEMBER() {
+    try {
+
+        const user = await account.get()
+
+        const projects = await database.listDocuments(
+            appwriteConfig.databaseId,
+            appwriteConfig.projectsCollectionId,
+            [
+                Query.contains('members_id', user.$id)
+            ]
+        )
+
+        console.log("SUCCESS | GET_PROJECTS_BY_MEMBER: ", projects)
+        return projects.documents
+
+    } catch (error) {
+        console.log("ERROR | GET_PROJECTS_BY_MEMBER: ", error.message)
         throw error
     }
 }

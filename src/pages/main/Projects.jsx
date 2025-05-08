@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react'
-import TaskSkeleton from '../../components/skeletons/TaskSkeleton'
-import TaskItem from '../../components/TaskItem'
-import { GET_ALL_TASKS } from '../../appwrite/database'
+import { GET_PROJECTS_BY_MEMBER } from '../../appwrite/database'
 import { useDispatch } from 'react-redux'
-import { loadTasks } from '../../redux/slices/task.slice'
+import { loadProjects } from '../../redux/slices/project.slice'
+import ProjectItem from '../../components/ProjectItem'
+import ProjectSkeleton from '../../components/skeletons/ProjectSkeletion'
 
-
-export default function Home() {
+export default function Projects() {
     const [isLoading, setIsLoading] = useState(true)
-    const [tasks, setTasks] = useState([])
+    const [projects, setProjects] = useState([])
     const dispatch = useDispatch()
 
-    const fetchTasks = async () => {
+    const fetchProjects = async () => {
         try {
-            const resp = await GET_ALL_TASKS()
+            const resp = await GET_PROJECTS_BY_MEMBER()
             if (resp) {
-                console.log(resp)
-                setTasks(resp)
-                dispatch(loadTasks(resp))
+                setProjects(resp)
+                dispatch(loadProjects(resp))
             }
 
         } catch (error) {
@@ -28,7 +26,7 @@ export default function Home() {
     }
 
     useEffect(() => {
-        fetchTasks()
+        fetchProjects()
     }, [])
 
     return (
@@ -36,18 +34,18 @@ export default function Home() {
             {/* Fixed Header */}
             <div className='pb-6'>
                 <h1 className='text-2xl font-bold text-white'>
-                    All Tasks
+                    Projects
                 </h1>
             </div>
 
             {/* Scrollable Tasks Area */}
-            <div className='flex-1 overflow-y-auto  mb-20 md:mb-0'>
+            <div className='flex-1 overflow-y-auto'>
                 {isLoading ? (
-                    <TaskSkeleton />
+                    <ProjectSkeleton />
                 ) : (
                     <ul className='space-y-4 pr-2'>
-                        {tasks.map(task => (
-                            <TaskItem key={task.id} task={task} />
+                        {projects.map(project => (
+                            <ProjectItem key={project.$id} project={project} />
                         ))}
                     </ul>
                 )}
