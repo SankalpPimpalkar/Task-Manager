@@ -39,7 +39,7 @@ export default function Projects() {
             </div>
 
             {/* Scrollable Tasks Area */}
-            <div className='flex-1 overflow-y-auto'>
+            <div className='flex-1 overflow-y-auto mb-6 md:mb-0'>
                 {isLoading ? (
                     <ProjectSkeleton />
                 ) : (

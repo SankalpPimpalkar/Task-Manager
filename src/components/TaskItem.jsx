@@ -47,7 +47,7 @@ export default function TaskItem({ task }) {
                 )}
             </div>
 
-            <div className='flex justify-between items-center'>
+            <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-3'>
                 <div className='flex items-center space-x-2'>
                     <p className='text-[#8a8d9b] text-xs'>
                         {getRelativeTimeFromNow(task.$createdAt)}

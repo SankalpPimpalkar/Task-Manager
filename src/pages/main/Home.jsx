@@ -32,7 +32,7 @@ export default function Home() {
     }, [])
 
     return (
-        <div className='border border-[#1d1f29] bg-[#11131e] p-5 col-span-4 rounded-md flex flex-col h-[calc(100dvh-40px)]'>
+        <div className='border border-[#1d1f29] bg-[#11131e] p-5 col-span-4 rounded-md flex flex-col md:h-[calc(100dvh-40px)]'>
             {/* Fixed Header */}
             <div className='pb-6'>
                 <h1 className='text-2xl font-bold text-white'>
@@ -41,7 +41,7 @@ export default function Home() {
             </div>
 
             {/* Scrollable Tasks Area */}
-            <div className='flex-1 overflow-y-auto  mb-20 md:mb-0'>
+            <div className='flex-1 overflow-y-auto mb-14 md:mb-0'>
                 {isLoading ? (
                     <TaskSkeleton />
                 ) : (

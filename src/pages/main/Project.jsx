@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import ProjectSkeleton from '../../components/skeletons/ProjectSkeletion'
 import { GET_PROJECT_BY_ID } from '../../appwrite/database'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Users, Calendar, GitBranch, FileText, ArrowRight, Check, Circle, AlertTriangle, Clock } from 'lucide-react'
 import getRelativeTimeFromNow from '../../helpers/getRelativeTimeFromNow'
 
@@ -9,6 +9,7 @@ export default function Project() {
     const [isLoading, setIsLoading] = useState(true)
     const [project, setProject] = useState(null)
     const { id } = useParams()
+    const navigate = useNavigate()
 
     const fetchProject = async () => {
         try {
@@ -58,7 +59,7 @@ export default function Project() {
             </div>
 
             {/* Scrollable Content Area */}
-            <div className='flex-1 overflow-y-auto  mb-20 md:mb-0'>
+            <div className='flex-1 overflow-y-auto  mb-6 md:mb-0'>
                 {isLoading ? (
                     <ProjectSkeleton />
                 ) : project ? (
@@ -69,7 +70,7 @@ export default function Project() {
                                 <h2 className='text-xl font-semibold text-white'>{project.title}</h2>
                             </div>
                             <p className='text-[#b5b7ba] text-sm mb-6'>{project.description}</p>
-                            
+
                             {/* Stats Section */}
                             <div className="flex flex-wrap gap-4 mb-6">
                                 <div className="flex items-center text-xs text-blue-400 bg-blue-400/10 px-3 py-1.5 rounded-full">
@@ -111,7 +112,10 @@ export default function Project() {
 
                         {/* Team Members */}
                         <div className='bg-[#1d1f29] p-5 rounded-lg'>
-                            <h3 className='text-lg font-semibold text-white mb-4'>Team Members</h3>
+                            <div className='flex items-center justify-between mb-4'>
+                                <h3 className='text-lg font-semibold text-white'>Team Members</h3>
+                                <button onClick={() => navigate(`/projects/${id}/member/add`)} className='flex items-center gap-2 px-4 py-2 rounded-lg disabled:bg-green-700 bg-green-600 text-sm'>Add Member</button>
+                            </div>
                             <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
                                 {project.members.map(member => (
                                     <div key={member.$id} className='flex items-center p-3 bg-[#252833] rounded-lg'>
@@ -138,7 +142,7 @@ export default function Project() {
                                             <div>
                                                 <h4 className='text-white font-medium flex flex-col md:flex-row gap-3 items-start md:items-center'>
                                                     <div className=''>
-                                                    {getStatusIcon(task.status)}
+                                                        {getStatusIcon(task.status)}
                                                     </div>
                                                     {task.title}
                                                 </h4>

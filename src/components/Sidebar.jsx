@@ -28,7 +28,7 @@ export default function Sidebar() {
             activeBg: "bg-[#1d1f29]"
         },
         {
-            path: "/assigned",
+            path: "/task/assigned",
             icon: ClipboardList,
             label: "Assigned",
             count: user?.assigned_tasks?.length,
@@ -50,7 +50,8 @@ export default function Sidebar() {
             icon: UserRound,
             label: "Profile",
             iconColor: "text-blue-400",
-            activeBg: "bg-blue-500/10"
+            activeBg: "bg-blue-500/10",
+            count: 0
         }
     ];
 
@@ -113,20 +114,11 @@ export default function Sidebar() {
                             <>
                                 <li>
                                     <button
-                                        onClick={handleOpenCreateTaskModal}
+                                        onClick={() => navigate('/task/create')}
                                         className='flex items-center w-full px-4 py-3 gap-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors duration-200 cursor-pointer'
                                     >
                                         <CirclePlus className='w-5 h-5' />
                                         <span>Create Task</span>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button
-                                        onClick={handleOpenAddNewModal}
-                                        className='flex items-center w-full px-4 py-3 gap-3 rounded-lg bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 transition-colors duration-200 cursor-pointer'
-                                    >
-                                        <CirclePlus className='w-5 h-5' />
-                                        <span>Add Member</span>
                                     </button>
                                 </li>
                                 {navItems.map((item, index) => (
@@ -171,7 +163,7 @@ export default function Sidebar() {
                     {/* Add Task Button */}
                     <li className='flex-1'>
                         <button
-                            onClick={handleOpenCreateTaskModal}
+                            onClick={() => navigate('/task/create')}
                             className='flex flex-col items-center py-3 text-emerald-400 hover:text-emerald-300 transition-colors duration-200'
                         >
                             <CirclePlus className='w-5 h-5 mb-1' />

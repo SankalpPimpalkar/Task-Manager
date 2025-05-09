@@ -40,7 +40,7 @@ export default function AssignedTasks() {
             </div>
 
             {/* Scrollable Tasks Area */}
-            <div className='flex-1 overflow-y-auto  mb-20 md:mb-0'>
+            <div className='flex-1 overflow-y-auto  mb-6 md:mb-0'>
                 {isLoading ? (
                     <TaskSkeleton />
                 ) : (

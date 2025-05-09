@@ -1,6 +1,6 @@
 import { account, database } from "./config";
 import appwriteConfig from "./config";
-import { Query } from "appwrite";
+import { ID, Query } from "appwrite";
 
 export async function GET_USER_BY_ID(id) {
     try {
@@ -178,7 +178,7 @@ export async function GET_PROJECTS_BY_MEMBER() {
             ]
         )
 
-        console.log("SUCCESS | GET_PROJECTS_BY_MEMBER: ", projects)
+        console.log("SUCCESS | GET_PROJECTS_BY_MEMBER: ", projects.documents)
         return projects.documents
 
     } catch (error) {
@@ -205,6 +205,69 @@ export async function GET_PROJECT_BY_ID(projectId) {
 
     } catch (error) {
         console.log("ERROR | GET_PROJECT_BY_ID: ", error.message)
+        throw error
+    }
+}
+
+export async function CREATE_TASK({ title, description, priority, due_date, assignee, project }) {
+    try {
+
+        const user = await account.get()
+
+        const task = await database.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.tasksCollectionId,
+            ID.unique(),
+            {
+                title,
+                description,
+                priority,
+                due_date,
+                assigned_by: user.$id,
+                assignee,
+                project
+            }
+        )
+
+        if (task) {
+            console.log("SUCCESS | CREATE_TASK: ", task)
+            return task
+        }
+
+        throw "Failed to create task"
+
+    } catch (error) {
+        console.log("ERROR | CREATE_TASK: ", error.message)
+        throw error
+    }
+}
+
+export async function CREATE_PROJECT({ title, description, deployment_links, source_code_links, members }) {
+    try {
+
+        const project = await database.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.projectsCollectionId,
+            ID.unique(),
+            {
+                title,
+                description,
+                members,
+                members_id: members,
+                deployment_links,
+                source_code_links
+            }
+        )
+
+        if (project) {
+            console.log("SUCCESS | CREATE_PROJECT: ", project)
+            return project
+        }
+
+        throw "Failed to create project"
+
+    } catch (error) {
+        console.log("ERROR | CREATE_PROJECT: ", error.message)
         throw error
     }
 }

@@ -140,3 +140,49 @@ export async function UPDATE_PASSWORD(
         throw error
     }
 }
+
+export async function UPDATE_USER_INFO({ name, email, occupation, about, links, location }) {
+    try {
+        const authUser = await account.get();
+        if (!authUser) throw new Error("No authenticated user");
+
+        const existingUser = await database.getDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.usersCollectionId,
+            authUser.$id
+        );
+
+        const updatePayload = {};
+
+        if (name?.trim() && name.trim() !== existingUser.name) updatePayload.name = name.trim();
+        if (email?.trim() && email.trim() !== existingUser.email) updatePayload.email = email.trim();
+        if (occupation?.trim() && occupation.trim() !== existingUser.occupation) updatePayload.occupation = occupation.trim();
+        if (about?.trim() && about.trim() !== existingUser.about) updatePayload.about = about.trim();
+        if (
+            Array.isArray(links) &&
+            links.length > 0 &&
+            JSON.stringify(links) !== JSON.stringify(existingUser.links)
+        ) {
+            updatePayload.links = links;
+        }
+        if (location?.trim() && location.trim() !== existingUser.location) updatePayload.location = location.trim();
+
+        if (Object.keys(updatePayload).length === 0) {
+            throw new Error("No new valid fields to update");
+        }
+
+        const updatedUser = await database.updateDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.usersCollectionId,
+            authUser.$id,
+            updatePayload
+        );
+
+        return updatedUser;
+
+    } catch (error) {
+        console.error("ERROR | UPDATE_USER_INFO:", error.message);
+        throw error;
+    }
+}
+
