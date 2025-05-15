@@ -1,57 +1,52 @@
-import { useState, useEffect } from 'react'
-import TaskSkeleton from '../../components/skeletons/TaskSkeleton'
-import TaskItem from '../../components/TaskItem'
-import { GET_ALL_TASKS } from '../../appwrite/database'
-import { useDispatch } from 'react-redux'
-import { loadTasks } from '../../redux/slices/task.slice'
-
+import React, { useEffect, useState, useTransition } from 'react'
+import Button from '../../components/Button'
+import { GET_ACCOUNT, LOGOUT_ACCOUNT } from '../../appwrite/auth'
+import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
-    const [isLoading, setIsLoading] = useState(true)
-    const [tasks, setTasks] = useState([])
-    const dispatch = useDispatch()
 
-    const fetchTasks = async () => {
-        try {
-            const resp = await GET_ALL_TASKS()
+    const [isPendingLogout, startPendingLogoutTransition] = useTransition()
+    const [isPendingUser, startPendingUserTransition] = useTransition()
+    const [user, setUser] = useState(null)
+    const navigate = useNavigate()
+
+    function handleSubmit(event) {
+        event.preventDefault()
+        startPendingLogoutTransition(async () => {
+            const resp = await LOGOUT_ACCOUNT()
+
             if (resp) {
-                console.log(resp)
-                setTasks(resp)
-                dispatch(loadTasks(resp))
+                toast('User logged out successfully')
+                navigate('/auth/signin')
             }
+        })
+    }
 
-        } catch (error) {
-            throw error
-        } finally {
-            setIsLoading(false)
-        }
+    function handleFetchUser() {
+        startPendingUserTransition(async () => {
+            const resp = await GET_ACCOUNT()
+
+            if (resp) {
+                setUser(resp)
+                console.log(resp.name)
+                toast('User data fetched successfully')
+            }
+        })
     }
 
     useEffect(() => {
-        fetchTasks()
+        handleFetchUser()
     }, [])
 
     return (
-        <div className='border border-[#1d1f29] bg-[#11131e] p-5 col-span-4 rounded-md flex flex-col md:h-[calc(100dvh-40px)]'>
-            {/* Fixed Header */}
-            <div className='pb-6'>
-                <h1 className='text-2xl font-bold text-white'>
-                    All Tasks
-                </h1>
-            </div>
-
-            {/* Scrollable Tasks Area */}
-            <div className='flex-1 overflow-y-auto mb-14 md:mb-0'>
-                {isLoading ? (
-                    <TaskSkeleton />
-                ) : (
-                    <ul className='space-y-4 pr-2'>
-                        {tasks.map(task => (
-                            <TaskItem key={task.id} task={task} />
-                        ))}
-                    </ul>
-                )}
-            </div>
+        <div className='text-black p-10 flex flex-col gap-5 items-center justify-center w-full min-h-dvh'>
+            <p className='text-black'>
+                {user?.name}
+            </p>
+            <Button type='button' onClick={handleSubmit} isLoading={isPendingLogout}>
+                Logout
+            </Button>
         </div>
     )
 }
