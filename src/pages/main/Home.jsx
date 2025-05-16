@@ -1,4 +1,3 @@
-import React from 'react'
 import Button from '../../components/ui/Button'
 import { Plus } from 'lucide-react'
 import { useSelector } from 'react-redux'
@@ -9,7 +8,7 @@ export default function Home() {
 
     return (
         <div className='w-full space-y-4'>
-            <div className='flex items-center justify-between w-full'>
+            <div className='flex items-center justify-between'>
                 <h1 className='font-bold text-2xl md:text-3xl text-gray-700'>
                     Your Projects
                 </h1>

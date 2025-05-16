@@ -5,6 +5,7 @@ import SignInPage from './pages/auth/SignInPage'
 import Home from './pages/main/Home'
 import MainLayout from './pages/main/MainLayout'
 import ProjectDetails from './pages/main/ProjectDetails'
+import Tasks from './pages/main/Tasks'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
 
       <Route path='/' element={<MainLayout />}>
         <Route path='' element={<Home />} />
+        <Route path='tasks' element={<Tasks />} />
         <Route path='projects/:projectId' element={<ProjectDetails />} />
       </Route>
     </Routes>

@@ -5,7 +5,8 @@ import { GET_ACCOUNT } from "../../appwrite/auth"
 import { loginUser } from "../../redux/slices/auth.slice"
 import Sidebar from "../../components/Sidebar"
 import { toast } from "react-toastify"
-import { PanelRightClose } from "lucide-react"
+import { LoaderCircle, PanelRightClose } from "lucide-react"
+import Default from "../../components/loaders/Default"
 
 export default function MainLayout() {
 
@@ -34,7 +35,7 @@ export default function MainLayout() {
                         setUser(resp)
                         dispatch(loginUser(resp))
                         console.log(resp.name)
-                        toast('User data fetched successfully')
+                        toast.success('User data fetched successfully')
                     }
                 })
             }
@@ -45,6 +46,12 @@ export default function MainLayout() {
         }
     }, [navigate])
 
+    if (isPendingUser) {
+        return (
+            <Default />
+        )
+    }
+
     return (
         <div className='flex w-full h-full min-h-dvh md:divide-x divide-gray-100'>
             <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
@@ -54,7 +61,7 @@ export default function MainLayout() {
                     className="md:hidden"
                     onClick={() => setIsOpen(true)}
                 >
-                    <PanelRightClose size={24} className="text-gray-600 stroke-2" />
+                    <PanelRightClose size={24} className="text-gray-500 stroke-[1.5]" />
                 </button>
                 <Outlet />
             </div>

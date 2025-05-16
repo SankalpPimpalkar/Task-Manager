@@ -77,7 +77,7 @@ export function MobileSidebar({ isOpen, setIsOpen }) {
                 <div className="p-4 h-full flex flex-col">
                     {/* Header with close button */}
                     <div className="flex justify-between items-center border-b border-gray-200 pb-4">
-                        <h1 className="font-bold text-xl text-gray-500">Task Manager</h1>
+                        <Link to={'/'} className="font-bold text-xl text-gray-500">Task Manager</Link>
                         <button
                             onClick={() => setIsOpen(false)}
                             className="p-1 rounded-md hover:bg-gray-100"
@@ -214,9 +214,9 @@ export function DesktopSidebar() {
             <div className='space-y-4'>
                 {/* Title */}
                 <div className='border-b border-gray-200 pb-4'>
-                    <h1 className='font-bold text-xl text-gray-500 flex items-center gap-2'>
+                    <Link to={'/'} className='font-bold text-xl text-gray-500 flex items-center gap-2'>
                         Task Manager
-                    </h1>
+                    </Link>
                 </div>
 
                 {/* Navigation */}
