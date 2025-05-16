@@ -3,6 +3,7 @@ import AuthLayout from './pages/auth/AuthLayout'
 import RegisterPage from './pages/auth/RegisterPage'
 import SignInPage from './pages/auth/SignInPage'
 import Home from './pages/main/Home'
+import MainLayout from './pages/main/MainLayout'
 
 export default function App() {
   return (
@@ -12,7 +13,9 @@ export default function App() {
         <Route path='signin' element={<SignInPage />} />
       </Route>
 
-      <Route path='/' element={<Home />} />
+      <Route path='/' element={<MainLayout />}>
+        <Route path='' element={<Home />} />
+      </Route>
     </Routes>
   )
 }
