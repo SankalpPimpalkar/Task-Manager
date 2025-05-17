@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useEffect } from "react"
+import { Outlet, useNavigate } from "react-router-dom"
 
 export default function AuthLayout() {
 
@@ -16,7 +16,7 @@ export default function AuthLayout() {
     }, [navigate])
 
     return (
-        <div className='w-full min-h-dvh bg-[#030712] text-white flex items-center justify-center'>
+        <div className="w-full min-h-dvh flex items-center justify-center sm:bg-gray-50">
             <Outlet />
         </div>
     )

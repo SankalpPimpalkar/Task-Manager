@@ -31,9 +31,13 @@ export async function GET_USER_BY_NAME_OR_EMAIL_OR_USERNAME(keyword) {
             appwriteConfig.databaseId,
             appwriteConfig.usersCollectionId,
             [
-                Query.contains('name', keyword),
-                Query.contains('email', keyword),
-                Query.contains('username', keyword)
+                Query.or(
+                    [
+                        Query.contains('name', keyword),
+                        Query.contains('email', keyword),
+                        Query.contains('username', keyword)
+                    ]
+                )
             ]
         )
 

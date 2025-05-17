@@ -1,197 +1,304 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { CalendarClock, CirclePlus, LogOut, UserRound, ClipboardList, Folder } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { openModal } from '../redux/slices/modal.slice';
-import { LOGOUT_ACCOUNT } from '../appwrite/auth';
-import { logoutUser } from '../redux/slices/auth.slice';
+import React, { useState, useRef, useEffect, useTransition } from 'react'
+import { LayoutDashboard, ListChecks, Settings, Folder, Plus, FolderGit2, LogOut, Menu, X, LogOutIcon, PanelRightClose } from 'lucide-react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { LOGOUT_ACCOUNT } from '../appwrite/auth'
+import { toast } from 'react-toastify'
+import Button from './ui/Button'
 
-export default function Sidebar() {
-    const location = useLocation();
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const user = useSelector(state => state.auth.user);
-    const isLoading = useSelector(state => state.auth.isLoading)
-    const tasksCount = useSelector(state => state.task.count)
-    const projectsCount = useSelector(state => state.project.count)
-    const assignedTasksCount = useSelector(state => state.task.assigned.length)
+export function MobileSidebar({ isOpen, setIsOpen }) {
+    const location = useLocation()
+    const user = useSelector(state => state.auth.user)
+    const [isPendingLogout, startPendingLogoutTransition] = useTransition()
+    const sidebarRef = useRef(null)
+    const navigate = useNavigate()
 
-    // Navigation items data
+    // Navigation items
     const navItems = [
-        {
-            path: "/",
-            icon: CalendarClock,
-            label: "All Tasks",
-            count: tasksCount,
-            iconColor: "text-white",
-            countColor: "bg-white/10 text-white",
-            activeBg: "bg-[#1d1f29]"
-        },
-        {
-            path: "/task/assigned",
-            icon: ClipboardList,
-            label: "Assigned",
-            count: user?.assigned_tasks?.length,
-            iconColor: "text-purple-400",
-            countColor: "bg-purple-500/10 text-purple-400",
-            activeBg: "bg-purple-500/10"
-        },
-        {
-            path: "/projects",
-            icon: Folder,
-            label: "Projects",
-            count: projectsCount,
-            iconColor: "text-cyan-400",
-            countColor: "bg-cyan-500/10 text-cyan-400",
-            activeBg: "bg-cyan-500/10"
-        },
-        {
-            path: `/profile/${user?.$id}`,
-            icon: UserRound,
-            label: "Profile",
-            iconColor: "text-blue-400",
-            activeBg: "bg-blue-500/10",
-            count: 0
+        { path: "/", icon: FolderGit2, label: "Projects" },
+        { path: "/tasks", icon: ListChecks, label: "Tasks" },
+        { path: "/settings", icon: Settings, label: "Settings" }
+    ]
+
+    function handleSubmit(event) {
+        event.preventDefault()
+        startPendingLogoutTransition(async () => {
+            const resp = await LOGOUT_ACCOUNT()
+            if (resp) {
+                toast('User logged out successfully')
+                navigate('/auth/signin')
+            }
+        })
+    }
+
+    // Check if a link is active
+    function isActive(path) {
+        return location.pathname === path ||
+            (path !== '/' && location.pathname.startsWith(path))
+    }
+
+    // Handle clicks outside the sidebar
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+                setIsOpen(false)
+            }
         }
-    ];
 
-    const handleOpenCreateTaskModal = () => {
-        dispatch(openModal('createTaskModal'));
-    };
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside)
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [isOpen])
 
-    const handleOpenAddNewModal = () => {
-        dispatch(openModal('addNewMemberModal'));
-    };
-
-    const handleLogout = async () => {
-        await LOGOUT_ACCOUNT();
-        dispatch(logoutUser());
-        navigate('/auth/register');
-    };
-
-    const isActive = (path) => {
-        return location.pathname === path;
-    };
+    // Prevent scrolling when sidebar is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'auto'
+        }
+    }, [isOpen])
 
     return (
         <>
-            {/* Desktop Sidebar */}
-            <div className='hidden md:flex border border-[#1d1f29] bg-[#11131e] p-5 col-span-1 rounded-md flex-col justify-between h-fit'>
-                {/* Profile Section */}
-                <div className="border-b border-[#1d1f29] pb-6 flex flex-col items-start gap-3">
-                    {isLoading ? (
-                        <>
-                            <div className="w-12 h-12 rounded-full bg-[#1d1f29] animate-pulse" />
-                            <div className="space-y-2 w-full">
-                                <div className="h-4 w-24 bg-[#1d1f29] rounded animate-pulse" />
-                                <div className="h-3 w-16 bg-[#1d1f29] rounded animate-pulse" />
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <img
-                                className='rounded-full w-12 h-12 object-cover border-2 border-[#3a3d4d]'
-                                src={user?.avatar || "https://img.lovepik.com/free-png/20210926/lovepik-cartoon-avatar-png-image_401440477_wh1200.png"}
-                                alt="avatar"
-                            />
-                            <div>
-                                <h1 className='text-white font-semibold'>{user?.name}</h1>
-                                <p className='text-[#8a8d9b] text-sm'>@{user?.username}</p>
-                            </div>
-                        </>
-                    )}
-                </div>
+            {/* Mobile Sidebar Overlay */}
+            {isOpen && (
+                <div className="fixed inset-0 bg-black/50 z-30 md:hidden"></div>
+            )}
 
-
-                {/* Navigation Links */}
-                <div className="flex-1 py-8">
-                    <ul className='space-y-2'>
-                        {isLoading ? (
-                            Array.from({ length: 4 }).map((_, index) => (
-                                <li key={index} className="h-10 bg-[#1d1f29] rounded animate-pulse" />
-                            ))
-                        ) : (
-                            <>
-                                <li>
-                                    <button
-                                        onClick={() => navigate('/task/create')}
-                                        className='flex items-center w-full px-4 py-3 gap-3 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300 transition-colors duration-200 cursor-pointer'
-                                    >
-                                        <CirclePlus className='w-5 h-5' />
-                                        <span>Create Task</span>
-                                    </button>
-                                </li>
-                                {navItems.map((item, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            to={item.path}
-                                            className={`flex items-center px-4 py-3 rounded-lg text-[#d1d5db] hover:bg-[#1d1f29] hover:text-white transition-colors duration-200 group ${isActive(item.path) ? `${item.activeBg} text-white` : ''
-                                                }`}
-                                        >
-                                            <div className='flex items-center gap-3'>
-                                                <item.icon className={`w-5 h-5 ${isActive(item.path) ? 'text-white' : item.iconColor
-                                                    } group-hover:${item.iconColor.replace('400', '300') || 'text-white'}`} />
-                                                <span>{item.label}</span>
-                                            </div>
-
-                                            {
-                                                item.count != 0 && (
-                                                    <span className={`ml-auto ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor
-                                                        } text-xs px-2 py-1 rounded-full`}>
-                                                        {item.count}
-                                                    </span>
-                                                )
-                                            }
-                                        </Link>
-                                    </li>
-                                ))}
-                            </>
-                        )}
-                    </ul>
-                </div>
-
-                {/* Logout Button */}
-                <button onClick={handleLogout} className='flex items-center justify-center w-full py-3 px-4 rounded-lg border border-[#1d1f29] text-[#d1d5db] hover:bg-[#1d1f29] hover:text-white transition-colors duration-200 group cursor-pointer'>
-                    <LogOut className="w-5 h-5 mr-3 text-gray-400 group-hover:text-gray-300" />
-                    <span>Logout</span>
-                </button>
-            </div>
-
-            {/* Mobile Bottom Bar */}
-            <div className='md:hidden fixed bottom-0 left-0 right-0 border-t border-[#1d1f29] bg-[#11131e] z-50'>
-                <ul className='flex justify-around px-4'>
-                    {/* Add Task Button */}
-                    <li className='flex-1'>
+            {/* Mobile Sidebar */}
+            <div
+                ref={sidebarRef}
+                className={`fixed top-0 left-0 h-full w-64 bg-white z-40 shadow-xl transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}
+            >
+                <div className="p-4 h-full flex flex-col">
+                    {/* Header with close button */}
+                    <div className="flex justify-between items-center border-b border-gray-200 pb-4">
+                        <Link to={'/'} className="font-bold text-xl text-gray-500">Task Manager</Link>
                         <button
-                            onClick={() => navigate('/task/create')}
-                            className='flex flex-col items-center py-3 text-emerald-400 hover:text-emerald-300 transition-colors duration-200'
+                            onClick={() => setIsOpen(false)}
+                            className="p-1 rounded-md hover:bg-gray-100"
                         >
-                            <CirclePlus className='w-5 h-5 mb-1' />
-                            <span className='text-xs text-white'>Add Task</span>
+                            <X size={20} className="text-gray-600" />
                         </button>
-                    </li>
+                    </div>
 
-                    {/* Navigation Items */}
-                    {navItems.map((item, index) => (
-                        <li key={index} className='flex-1'>
-                            <Link
-                                to={item.path}
-                                className={`flex flex-col items-center py-3 ${isActive(item.path) ? 'text-white' : 'text-[#d1d5db]'} hover:text-white transition-colors duration-200 group relative`}
-                            >
-                                <item.icon className={`w-5 h-5 mb-1 ${isActive(item.path) ? 'text-white' : item.iconColor} group-hover:${item.iconColor.replace('400', '300') || 'text-white'}`} />
-                                <span className='text-xs'>{item.label}</span>
-                                {
-                                    item.count != 0 && (
-                                        <span className={`absolute top-1 right-6 ${isActive(item.path) ? 'bg-white/20 text-white' : item.countColor} text-xs px-1.5 py-0.5 rounded-full`}>
-                                            {item.count}
-                                        </span>
-                                    )
-                                }
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                    {/* Navigation */}
+                    <div className="mt-6 space-y-2 flex-1 overflow-y-auto">
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wider px-2">Navigation</p>
+                        <nav className="flex flex-col space-y-1">
+                            {navItems.map((item) => {
+                                const Icon = item.icon
+                                return (
+                                    <Link
+                                        key={item.path}
+                                        to={item.path}
+                                        onClick={() => setIsOpen(false)}
+                                        className={`flex items-center gap-3 p-3 rounded-lg transition-all text-xs ${isActive(item.path) ? 'bg-gray-50 text-gray-700 font-medium' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                    >
+                                        <Icon size={18} className={isActive(item.path) ? 'text-gray-600' : 'text-gray-500'} />
+                                        {item.label}
+                                    </Link>
+                                )
+                            })}
+                        </nav>
+
+                        {/* Projects List */}
+                        <div className="mt-6 space-y-2">
+                            <div className="flex items-center justify-between px-2">
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Projects</p>
+                                <button className="text-gray-500 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors">
+                                    <Plus size={16} />
+                                </button>
+                            </div>
+                            <div className="flex flex-col space-y-1">
+                                {user?.projects?.map((project) => (
+                                    <Link
+                                        key={project.$id}
+                                        to={`/projects/${project.$id}`}
+                                        onClick={() => setIsOpen(false)}
+                                        className={`flex items-center gap-3 p-3 rounded-lg transition-all text-xs ${isActive(`/projects/${project.$id}`) ? 'bg-gray-50 text-gray-700 font-medium' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                    >
+                                        <Folder size={18} className={isActive(`/projects/${project.$id}`) ? 'text-gray-600' : 'text-gray-500'} />
+                                        {project.title}
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='absolute bottom-4 left-0 right-0 px-4 flex flex-col gap-4'>
+                        <div
+                            className='flex items-center gap-3 rounded-lg cursor-pointer relative'
+                        >
+                            <div className='w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 font-medium'>
+                                {user?.name?.[0]?.toUpperCase() || 'U'}
+                            </div>
+                            <div className='text-sm'>
+                                <p className='font-medium'>
+                                    {user?.name || 'User'}
+                                </p>
+                                <p className='text-xs text-gray-500'>
+                                    {user?.occupation || 'Member'}
+                                </p>
+                            </div>
+                        </div>
+
+                        <Button
+                            className='w-full py-3 text-sm justify-between'
+                            type='button'
+                            onClick={handleSubmit}
+                            isLoading={isPendingLogout}
+                        >
+                            Logout
+                            <LogOutIcon size={18} />
+                        </Button>
+                    </div>
+                </div>
             </div>
         </>
-    );
+    )
+}
+
+// Original Desktop Sidebar (renamed for clarity)
+export function DesktopSidebar() {
+    const location = useLocation()
+    const user = useSelector(state => state.auth.user)
+    const [isPendingLogout, startPendingLogoutTransition] = useTransition()
+    const profileRef = useRef(null)
+    const navigate = useNavigate()
+
+    // Navigation items
+    const navItems = [
+        { path: "/", icon: FolderGit2, label: "Projects" },
+        { path: "/tasks", icon: ListChecks, label: "Tasks" },
+        { path: "/settings", icon: Settings, label: "Settings" }
+    ]
+
+    function handleSubmit(event) {
+        event.preventDefault()
+        startPendingLogoutTransition(async () => {
+            const resp = await LOGOUT_ACCOUNT()
+            if (resp) {
+                toast('User logged out successfully')
+                navigate('/auth/signin')
+            }
+        })
+    }
+
+    // Check if a link is active
+    function isActive(path) {
+        return location.pathname === path ||
+            (path !== '/' && location.pathname.startsWith(path))
+    }
+
+    // Handle clicks outside the dropdown
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (profileRef.current && !profileRef.current.contains(event.target)) {
+                setIsProfileOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [profileRef])
+
+    return (
+        <div className='hidden md:flex flex-col items-stretch justify-between w-full max-w-[240px] min-h-dvh h-full p-4 border-r border-gray-200 bg-white/95 space-y-6'>
+            <div className='space-y-4'>
+                {/* Title */}
+                <div className='border-b border-gray-200 pb-4'>
+                    <Link to={'/'} className='font-bold text-xl text-gray-500 flex items-center gap-2'>
+                        Task Manager
+                    </Link>
+                </div>
+
+                {/* Navigation */}
+                <div className='space-y-2'>
+                    <p className='text-xs font-medium text-gray-500 uppercase tracking-wider px-2'>Navigation</p>
+                    <nav className='flex flex-col space-y-1'>
+                        {navItems.map((item) => {
+                            const Icon = item.icon
+                            return (
+                                <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`flex items-center gap-3 p-2 rounded-lg transition-all text-sm ${isActive(item.path) ? 'bg-gray-50 text-gray-700 font-medium' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                                >
+                                    <Icon size={18} className={isActive(item.path) ? 'text-gray-600' : 'text-gray-500'} />
+                                    {item.label}
+                                </Link>
+                            )
+                        })}
+                    </nav>
+                </div>
+
+                {/* Projects List */}
+                <div className='space-y-2'>
+                    <div className='flex items-center justify-between px-2'>
+                        <p className='text-xs font-medium text-gray-500 uppercase tracking-wider'>Projects</p>
+                        <button className='text-gray-500 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors'>
+                            <Plus size={16} />
+                        </button>
+                    </div>
+                    <div className='flex flex-col space-y-1'>
+                        {user?.projects?.map((project) => (
+                            <Link
+                                key={project.$id}
+                                to={`/projects/${project.$id}`}
+                                className={`flex items-center gap-3 p-2 rounded-lg transition-all text-sm ${isActive(`/projects/${project.$id}`) ? 'bg-gray-50 text-gray-700 font-medium' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}
+                            >
+                                <Folder size={18} className={isActive(`/projects/${project.$id}`) ? 'text-gray-600' : 'text-gray-500'} />
+                                {project.title}
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className='flex flex-col gap-4 w-full'>
+                <div
+                    className='flex items-center gap-3 rounded-lg cursor-pointer relative'
+                >
+                    <div className='w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-800 font-medium'>
+                        {user?.name?.[0]?.toUpperCase() || 'U'}
+                    </div>
+                    <div className='text-sm'>
+                        <p className='font-medium'>
+                            {user?.name || 'User'}
+                        </p>
+                        <p className='text-xs text-gray-500'>
+                            {user?.occupation || 'Member'}
+                        </p>
+                    </div>
+                </div>
+
+                <Button
+                    className='w-full py-3 text-sm justify-between'
+                    type='button'
+                    onClick={handleSubmit}
+                    isLoading={isPendingLogout}
+                >
+                    Logout
+                    <LogOutIcon size={18} />
+                </Button>
+            </div>
+        </div>
+    )
+}
+
+// Main Sidebar Component that switches between mobile and desktop
+export default function Sidebar({ isOpen, setIsOpen }) {
+    return (
+        <>
+            <DesktopSidebar />
+            <MobileSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        </>
+    )
 }

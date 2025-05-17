@@ -9,8 +9,6 @@ export async function CREATE_ACCOUNT(
         password,
         username,
         occupation,
-        location,
-        about
     }
 ) {
     try {
@@ -26,8 +24,6 @@ export async function CREATE_ACCOUNT(
                     email,
                     username,
                     occupation,
-                    location,
-                    about,
                 }
             )
 
@@ -110,7 +106,7 @@ export async function LOGOUT_ACCOUNT() {
 
         await account.deleteSession('current')
         console.log("SUCCESS | LOGOUT ACCOUNT")
-        return
+        return true
 
     } catch (error) {
         console.log("ERROR | LOGOUT ACCOUNT: ", error.message)
