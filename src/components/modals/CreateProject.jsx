@@ -1,42 +1,32 @@
-import { X, Search, Link2, Code, Text, Type } from 'lucide-react'
+import { X, Link2, Code, Text, Type } from 'lucide-react'
 import Button from '../../components/ui/Button'
 import InputField from '../../components/ui/InputField'
-import { useEffect, useState, useTransition } from 'react'
-import { useDebounce } from '@uidotdev/usehooks'
-import { CREATE_PROJECT, GET_USER_BY_NAME_OR_EMAIL_OR_USERNAME } from '../../appwrite/database'
+import { useState, useTransition } from 'react'
+import { CREATE_PROJECT } from '../../appwrite/database'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 export default function CreateProject({ onClose, isOpen }) {
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         source_code_links: [],
-        deployment_links: [],
-        members: []
+        deployment_links: []
     })
 
-    const [searchQuery, setSearchQuery] = useState('')
-    const [searchResults, setSearchResults] = useState([])
-    const [selectedUsers, setSelectedUsers] = useState([])
     const [currentDeploymentLink, setCurrentDeploymentLink] = useState('')
     const [currentSourceCodeLink, setCurrentSourceCodeLink] = useState('')
-    const debouncedSearchUser = useDebounce(searchQuery, 300)
     const [isPendingCreateProjectForm, startCreateProjectForm] = useTransition()
+    const navigate = useNavigate()
 
     function handleClear() {
         setFormData({
             title: '',
             description: '',
             source_code_links: [],
-            deployment_links: [],
-            members: []
+            deployment_links: []
         })
         console.log("Cleared")
-    }
-
-    async function handleSearch() {
-        const resp = await GET_USER_BY_NAME_OR_EMAIL_OR_USERNAME(debouncedSearchUser)
-        setSearchResults(resp)
     }
 
     function handleSubmitCreateProject(event) {
@@ -44,29 +34,13 @@ export default function CreateProject({ onClose, isOpen }) {
         startCreateProjectForm(async () => {
             {
                 const resp = await CREATE_PROJECT(formData)
-                onClose()
-                window.location.reload()
+
+                if (resp) {
+                    onClose()
+                    navigate(`/projects/${resp.$id}`)
+                    toast.success(`Project ${resp.title} has been created`)
+                }
             }
-        })
-    }
-
-    function addUser(user) {
-        if (!selectedUsers.some(u => u.$id === user.$id)) {
-            setSelectedUsers([...selectedUsers, user])
-            setFormData({
-                ...formData,
-                members: [...formData.members, user.$id]
-            })
-        }
-        setSearchQuery('')
-        setSearchResults([])
-    }
-
-    function removeUser(userId) {
-        setSelectedUsers(selectedUsers.filter(user => user.$id !== userId))
-        setFormData({
-            ...formData,
-            members: formData.members.filter(id => id !== userId)
         })
     }
 
@@ -109,10 +83,6 @@ export default function CreateProject({ onClose, isOpen }) {
             source_code_links: formData.source_code_links.filter((_, i) => i !== index)
         })
     }
-
-    useEffect(() => {
-        handleSearch()
-    }, [debouncedSearchUser])
 
     if (!isOpen) return null
 
@@ -211,58 +181,6 @@ export default function CreateProject({ onClose, isOpen }) {
                                         onClick={() => removeSourceCodeLink(index)}
                                         className='text-gray-400 hover:text-gray-600 transition-colors'
                                     >
-                                        <X size={14} />
-                                    </button>
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Members Search */}
-                    <div className="space-y-2">
-                        <label className='text-xs text-gray-600'>Add Members</label>
-                        <div className="relative">
-                            <div className="flex items-center border border-gray-200 rounded px-2 py-1.5 text-sm gap-2">
-                                <Search className="text-gray-400" size={14} />
-                                <input
-                                    type="text"
-                                    className="w-full rounded-md focus:outline-none text-sm"
-                                    placeholder="Search by name, email or username..."
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    value={searchQuery}
-                                />
-                            </div>
-
-                            {/* Search results dropdown */}
-                            {searchResults.length > 0 && (
-                                <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg max-h-28 overflow-y-auto">
-                                    {searchResults.map(user => (
-                                        <div
-                                            key={user.$id}
-                                            onClick={() => addUser(user)}
-                                            className="py-1.5 px-2 text-sm hover:bg-gray-50 cursor-pointer flex items-center border-b border-gray-100 last:border-b-0"
-                                        >
-                                            <img
-                                                src={user.avatar || `https://ui-avatars.com/api/?name=${user.name}`}
-                                                alt={user.name}
-                                                className="w-8 h-8 rounded-full mr-3"
-                                            />
-                                            <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm truncate">{user.name}</p>
-                                                <p className="text-xs text-gray-600 truncate">{user.email}</p>
-                                            </div>
-                                            <span className="text-xs text-gray-500 ml-2">@{user.username}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className='flex flex-wrap gap-2'>
-                            {selectedUsers.map((user, index) => (
-                                <span key={index} className='text-xs text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full flex items-center gap-1.5'>
-                                    {user.name}
-                                    <button type='button' onClick={() => removeUser(user.$id)} className='text-gray-400 hover:text-gray-600 transition-colors'>
                                         <X size={14} />
                                     </button>
                                 </span>

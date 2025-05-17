@@ -80,15 +80,11 @@ export async function GET_ALL_TASKS() {
         );
 
 
-        if (tasks.total) {
-            console.log("SUCCESS | GET_ALL_TASKS: ", tasks)
-            return tasks.documents
-        }
-
-        throw "Failed to get all tasks"
+        console.log("SUCCESS | GET_ALL_TASKS: ", tasks)
+        return tasks.documents
 
     } catch (error) {
-        console.log("ERROR | GET_ALL_TASKS: ", error.message)
+        console.log("ERROR | GET_ALL_TASKS: ", error)
         throw error
     }
 }
@@ -246,8 +242,11 @@ export async function CREATE_TASK({ title, description, priority, due_date, assi
     }
 }
 
-export async function CREATE_PROJECT({ title, description, deployment_links, source_code_links, members }) {
+export async function CREATE_PROJECT({ title, description, deployment_links, source_code_links }) {
     try {
+
+        const user = await account.get()
+        const members = [user.$id]
 
         const project = await database.createDocument(
             appwriteConfig.databaseId,
@@ -259,7 +258,8 @@ export async function CREATE_PROJECT({ title, description, deployment_links, sou
                 members,
                 members_id: members,
                 deployment_links,
-                source_code_links
+                source_code_links,
+                owner: user.$id
             }
         )
 

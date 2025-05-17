@@ -29,7 +29,6 @@ export default function ProjectDetails() {
             const resp = await GET_PROJECT_BY_ID(projectId)
             if (resp) {
                 setProject(resp)
-                toast.success('Project data fetched successfully')
             }
         })
     }
@@ -39,13 +38,10 @@ export default function ProjectDetails() {
     }, [projectId])
 
     return (
-        <div className='w-full min-h-fit flex flex-col pt-2 md:pt-0'>
-            {/* Main content container with controlled scrolling */}
+        <div className='w-full flex flex-col pt-2 md:pt-0'>
             <div className='flex-1 overflow-hidden'>
                 <div className='h-full grid grid-cols-1 lg:grid-cols-4 gap-4'>
-                    {/* Left content area (3 columns on lg screens) */}
                     <div className='lg:col-span-3 flex flex-col gap-4 h-full overflow-hidden'>
-                        {/* Project header */}
                         <div className='bg-white p-4 rounded-lg border border-gray-200'>
                             <h1 className='font-bold text-2xl md:text-3xl text-gray-700'>
                                 {project?.title || 'Loading project...'}
@@ -55,11 +51,9 @@ export default function ProjectDetails() {
                             )}
                         </div>
 
-                        {/* Deployment and Source Code Links */}
                         <div className='bg-white p-4 rounded-lg border border-gray-200'>
                             <h2 className='font-semibold text-xl text-gray-800 mb-4'>Project Details</h2>
 
-                            {/* Deployment Links Section */}
                             <div className='mb-6'>
                                 <h3 className='flex items-center gap-2 font-medium text-gray-700 mb-2'>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,7 +83,6 @@ export default function ProjectDetails() {
                                 )}
                             </div>
 
-                            {/* Source Code Links Section */}
                             <div>
                                 <h3 className='flex items-center gap-2 font-medium text-gray-700 mb-2'>
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,7 +113,6 @@ export default function ProjectDetails() {
                             </div>
                         </div>
 
-                        {/* Tasks Section with proper scrolling */}
                         <div className='bg-white p-4 rounded-lg border border-gray-200 flex flex-col'>
                             <h2 className='font-semibold text-xl text-gray-800 mb-4'>Tasks</h2>
                             <div className='flex-1'>

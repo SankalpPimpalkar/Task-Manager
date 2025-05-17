@@ -4,8 +4,7 @@ import { Outlet, useNavigate } from "react-router-dom"
 import { GET_ACCOUNT } from "../../appwrite/auth"
 import { loginUser } from "../../redux/slices/auth.slice"
 import Sidebar from "../../components/Sidebar"
-import { toast } from "react-toastify"
-import { LoaderCircle, PanelRightClose } from "lucide-react"
+import { PanelRightClose } from "lucide-react"
 import Default from "../../components/loaders/Default"
 
 export default function MainLayout() {
@@ -35,7 +34,6 @@ export default function MainLayout() {
                         setUser(resp)
                         dispatch(loginUser(resp))
                         console.log(resp.name)
-                        toast.success('User data fetched successfully')
                     }
                 })
             }
@@ -55,7 +53,7 @@ export default function MainLayout() {
     return (
         <div className='flex w-full h-full min-h-dvh md:divide-x divide-gray-100'>
             <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-            <div className="py-4 px-4 max-h-[calc(100vh-40px)] overflow-y-auto">
+            <div className="py-4 px-4 w-full max-h-[calc(100vh-20px)] overflow-y-auto">
                 {/* Mobile Hamburger Button */}
                 <button
                     className="md:hidden"
