@@ -121,9 +121,9 @@ export default function ProjectDetails() {
                         </div>
 
                         {/* Tasks Section with proper scrolling */}
-                        <div className='bg-white p-4 rounded-lg border border-gray-200 flex flex-col overflow-hidden'>
+                        <div className='bg-white p-4 rounded-lg border border-gray-200 flex flex-col'>
                             <h2 className='font-semibold text-xl text-gray-800 mb-4'>Tasks</h2>
-                            <div className='flex-1 overflow-y-auto max-h-52'>
+                            <div className='flex-1'>
                                 {project?.tasks?.length > 0 ? (
                                     <div className='space-y-3 pr-2'>
                                         {project.tasks.map(task => (
