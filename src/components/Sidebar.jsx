@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, useTransition } from 'react'
-import { LayoutDashboard, ListChecks, Settings, Folder, Plus, FolderGit2, LogOut, Menu, X, LogOutIcon, PanelRightClose } from 'lucide-react'
+import { useRef, useEffect, useTransition } from 'react'
+import { ListChecks, Settings, Folder, FolderGit2, X, LogOutIcon } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { LOGOUT_ACCOUNT } from '../appwrite/auth'
@@ -110,12 +110,9 @@ export function MobileSidebar({ isOpen, setIsOpen }) {
                         <div className="mt-6 space-y-2">
                             <div className="flex items-center justify-between px-2">
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Projects</p>
-                                <button className="text-gray-500 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors">
-                                    <Plus size={16} />
-                                </button>
                             </div>
                             <div className="flex flex-col space-y-1">
-                                {user?.projects?.map((project) => (
+                                {user?.projects?.slice(0,3).map((project) => (
                                     <Link
                                         key={project.$id}
                                         to={`/projects/${project.$id}`}
@@ -243,12 +240,9 @@ export function DesktopSidebar() {
                 <div className='space-y-2'>
                     <div className='flex items-center justify-between px-2'>
                         <p className='text-xs font-medium text-gray-500 uppercase tracking-wider'>Projects</p>
-                        <button className='text-gray-500 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors'>
-                            <Plus size={16} />
-                        </button>
                     </div>
                     <div className='flex flex-col space-y-1'>
-                        {user?.projects?.map((project) => (
+                        {user?.projects?.slice(0,5).map((project) => (
                             <Link
                                 key={project.$id}
                                 to={`/projects/${project.$id}`}
