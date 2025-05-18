@@ -1,5 +1,5 @@
 import { useRef, useEffect, useTransition } from 'react'
-import { ListChecks, Settings, Folder, FolderGit2, X, LogOutIcon } from 'lucide-react'
+import { ListChecks, Settings, Folder, FolderGit2, X, LogOutIcon, Plus } from 'lucide-react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { LOGOUT_ACCOUNT } from '../appwrite/auth'
@@ -240,6 +240,7 @@ export function DesktopSidebar() {
                 <div className='space-y-2'>
                     <div className='flex items-center justify-between px-2'>
                         <p className='text-xs font-medium text-gray-500 uppercase tracking-wider'>Projects</p>
+                        <Plus onClick={() => navigate('/projects/create')} size={22} className='text-gray-500 hover:bg-gray-200 rounded-md p-1 cursor-pointer transition-all duration-300'/>
                     </div>
                     <div className='flex flex-col space-y-1'>
                         {user?.projects?.slice(0,5).map((project) => (

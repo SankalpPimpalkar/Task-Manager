@@ -31,7 +31,7 @@ export default function Project({ project }) {
         <Link
             to={`/projects/${project.$id}`}
             key={project.$id}
-            className="border border-gray-200 bg-white p-4 rounded-lg hover:border-gray-300 flex flex-col items-start justify-between"
+            className="border border-gray-200 bg-white p-4 rounded-lg hover:border-gray-300 w-full max-h-48 flex flex-col items-start justify-between"
         >
             <div className='flex flex-col items-start justify-start w-full'>
                 <div className="flex justify-between items-center mb-3 w-full">
