@@ -4,6 +4,38 @@ import { useEffect, useState, useTransition } from "react";
 import { GET_ALL_TASKS } from "../../appwrite/database";
 import { Link, useNavigate } from "react-router-dom";
 
+function TaskSkeleton() {
+    return (
+        <div className="border border-gray-200 bg-white p-3 sm:p-4 rounded-md w-full flex flex-col">
+            {/* Title Skeleton */}
+            <div className="flex justify-between items-start mb-3">
+                <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-1/4 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+
+            {/* Description Skeleton */}
+            <div className="space-y-2 mb-4">
+                <div className="h-3 w-full bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-3 w-5/6 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+
+            {/* Badges Skeleton */}
+            <div className="flex gap-2 mb-3">
+                <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
+                <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
+            </div>
+
+            {/* Footer Skeleton */}
+            <div className="mt-auto pt-3 border-t border-gray-100 flex justify-between items-center">
+                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                <div className="flex -space-x-1">
+                    <div className="h-6 w-6 rounded-full bg-gray-200 animate-pulse"></div>
+                    <div className="h-6 w-6 rounded-full bg-gray-200 animate-pulse"></div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function PriorityBadge({ priority }) {
     const priorityClasses = {
@@ -73,7 +105,7 @@ export default function Tasks() {
     const [isPendingFetchTasks, startFetchTasksTransition] = useTransition();
     const [tasks, setTasks] = useState([]);
     const [filter, setFilter] = useState("All");
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         startFetchTasksTransition(async () => {
@@ -88,7 +120,7 @@ export default function Tasks() {
     });
 
     return (
-        <div className="w-full h-full pb-2 space-y-4">
+        <div className="w-full h-full pb-2 space-y-4 p-2 sm:p-4">
             <div className="w-full flex flex-col gap-3">
                 <div className="flex items-center justify-between">
                     <h1 className="text-xl sm:text-2xl font-bold text-gray-700">
@@ -103,7 +135,11 @@ export default function Tasks() {
                     </Button>
                 </div>
 
-                <select className="border border-gray-200 bg-white rounded-md px-3 py-1.5 text-sm outline-none appearance-none md:w-fit cursor-pointer" onChange={(e) => setFilter(e.target.value)}>
+                <select
+                    className="border border-gray-200 bg-white rounded-md px-3 py-1.5 text-sm outline-none appearance-none md:w-fit cursor-pointer"
+                    onChange={(e) => setFilter(e.target.value)}
+                    disabled={isPendingFetchTasks}
+                >
                     <option defaultChecked value="All">All</option>
                     <option value="Pending">Pending</option>
                     <option value="In Progress">In Progress</option>
@@ -111,69 +147,76 @@ export default function Tasks() {
                 </select>
             </div>
 
-            {/* Tasks Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {filteredTasks?.map(task => (
-                    <Link
-                        to={`/tasks/${task.$id}`}
-                        key={task.$id}
-                        className="border border-gray-200 bg-white p-3 sm:p-4 rounded-md hover:border-gray-300 w-full flex flex-col"
-                    >
-                        {/* Task Header */}
-                        <div className="flex justify-between items-start mb-2 sm:mb-3">
-                            <h2 className="text-base sm:text-lg font-semibold text-gray-800 line-clamp-1">
-                                {task.title}
-                            </h2>
-                            <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
-                                {new Date(task.due_date).toLocaleDateString()}
-                            </span>
-                        </div>
-
-                        {/* Task Description */}
-                        <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 line-clamp-2">
-                            {task.description}
-                        </p>
-
-                        {/* Priority and Status */}
-                        <div className="flex flex-wrap gap-2 mb-3">
-                            <PriorityBadge priority={task.priority} />
-                            <StatusIndicator status={task.status} />
-                        </div>
-
-                        {/* Footer with Project and Assignees */}
-                        <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
-                            <div className="flex items-center gap-1">
-                                <span className="text-xs text-gray-500 hidden sm:inline">Project:</span>
-                                <span className="text-xs font-medium text-gray-700 line-clamp-1 max-w-[80px] sm:max-w-[100px]">
-                                    {task.project?.title || "No project"}
+            {isPendingFetchTasks ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {[...Array(6)].map((_, index) => (
+                        <TaskSkeleton key={index} />
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {filteredTasks?.map(task => (
+                        <Link
+                            to={`/tasks/${task.$id}`}
+                            key={task.$id}
+                            className="border border-gray-200 bg-white p-3 sm:p-4 rounded-md hover:border-gray-300 w-full flex flex-col"
+                        >
+                            {/* Task Header */}
+                            <div className="flex justify-between items-start mb-2 sm:mb-3">
+                                <h2 className="text-base sm:text-lg font-semibold text-gray-800 line-clamp-1">
+                                    {task.title}
+                                </h2>
+                                <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                                    {new Date(task.due_date).toLocaleDateString()}
                                 </span>
                             </div>
 
-                            <div className="flex -space-x-1">
-                                <MemberAvatar member={task.assignee} />
-                                {task.assigned_by && task.assigned_by.$id !== task.assignee.$id && (
-                                    <MemberAvatar member={task.assigned_by} />
-                                )}
-                            </div>
-                        </div>
-                    </Link>
-                ))}
+                            {/* Task Description */}
+                            <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4 line-clamp-2">
+                                {task.description}
+                            </p>
 
-                {/* Empty State */}
-                {filteredTasks.length === 0 && (
-                    <div className="col-span-full text-center py-8">
-                        <div className="mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 flex items-center justify-center">
-                            <Clock className="text-gray-400" size={28} />
+                            {/* Priority and Status */}
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                <PriorityBadge priority={task.priority} />
+                                <StatusIndicator status={task.status} />
+                            </div>
+
+                            {/* Footer with Project and Assignees */}
+                            <div className="mt-auto pt-2 sm:pt-3 border-t border-gray-100 flex justify-between items-center">
+                                <div className="flex items-center gap-1">
+                                    <span className="text-xs text-gray-500 hidden sm:inline">Project:</span>
+                                    <span className="text-xs font-medium text-gray-700 line-clamp-1 max-w-[80px] sm:max-w-[100px]">
+                                        {task.project?.title || "No project"}
+                                    </span>
+                                </div>
+
+                                <div className="flex -space-x-1">
+                                    <MemberAvatar member={task.assignee} />
+                                    {task.assigned_by && task.assigned_by.$id !== task.assignee.$id && (
+                                        <MemberAvatar member={task.assigned_by} />
+                                    )}
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+
+                    {/* Empty State */}
+                    {filteredTasks?.length === 0 && (
+                        <div className="col-span-full text-center py-8">
+                            <div className="mx-auto w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                                <Clock className="text-gray-400" size={28} />
+                            </div>
+                            <h3 className="text-base sm:text-lg font-medium text-gray-700">No tasks found</h3>
+                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                                {filter === "All"
+                                    ? "Create your first task to get started"
+                                    : `No ${filter.toLowerCase()} tasks`}
+                            </p>
                         </div>
-                        <h3 className="text-base sm:text-lg font-medium text-gray-700">No tasks found</h3>
-                        <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                            {filter === "All"
-                                ? "Create your first task to get started"
-                                : `No ${filter.toLowerCase()} tasks`}
-                        </p>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
