@@ -51,17 +51,18 @@ export default function MainLayout() {
     }
 
     return (
-        <div className='flex w-full h-full min-h-dvh md:divide-x divide-gray-100'>
+        <div className='flex w-full h-full min-h-dvh md:divide-x divide-gray-100 bg-gray-100'>
             <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
-            <div className="py-4 px-4 w-full max-h-[calc(100vh-20px)] overflow-y-auto">
-                {/* Mobile Hamburger Button */}
+            <div className="p-4 w-full max-h-dvh space-y-4">
                 <button
                     className="md:hidden"
                     onClick={() => setIsOpen(true)}
                 >
                     <PanelRightClose size={24} className="text-gray-500 stroke-[1.5]" />
                 </button>
+                <div className="h-full max-h-[90vh] overflow-y-auto">
                 <Outlet />
+                </div>
             </div>
         </div>
     )
