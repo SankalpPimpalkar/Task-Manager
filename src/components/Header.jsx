@@ -1,5 +1,5 @@
 import { Menu } from 'lucide-react'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Sidebar from './Sidebar'
 import { Link } from 'react-router-dom'
 

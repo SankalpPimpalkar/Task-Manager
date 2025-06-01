@@ -5,8 +5,8 @@ export default function TasksSection() {
     return (
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2'>
             {
-                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(project => (
-                    <Link to={`/projects/${project}`} key={project} className='border border-gray-300 p-4 bg-gray-50 rounded-md space-y-2'>
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(task => (
+                    <Link to={`/tasks/${task}`} key={task} className='border border-gray-300 p-4 bg-gray-50 rounded-md space-y-2'>
                         <h5 className='font-semibold text-gray-700'>
                             Task Title
                         </h5>
