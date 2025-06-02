@@ -151,7 +151,6 @@ export default function Project() {
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </div>
     )

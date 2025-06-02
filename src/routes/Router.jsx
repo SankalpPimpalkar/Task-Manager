@@ -9,6 +9,8 @@ import Tasks from '../pages/main/Tasks'
 import Project from '../pages/main/Project'
 import Profile from '../pages/main/Profile'
 import Task from '../pages/main/Task'
+import CreateTask from '../pages/main/CreateTask'
+import CreateProject from '../pages/main/CreateProject'
 
 export default function Router() {
     return (
@@ -20,10 +22,17 @@ export default function Router() {
 
             <Route path='/' element={<MainLayout />} >
                 <Route path='' element={<Home />} />
-                <Route path='tasks' element={<Tasks />} />
-                <Route path='tasks/:taskId' element={<Task />} />
+
+                <Route path='tasks'>
+                    <Route path='' element={<Tasks />} />
+                    <Route path=':taskId' element={<Task />} />
+                    <Route path='create' element={<CreateTask />} />
+                </Route>
+
+
                 <Route path='projects'>
                     <Route path='' element={<Projects />} />
+                    <Route path='create' element={<CreateProject />} />
                     <Route path=':projectId' element={<Project />} />
                     <Route path=':projectId/taskboard' element={<TaskBoard />} />
                 </Route>
