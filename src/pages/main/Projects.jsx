@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import ProjectsSection from "../../components/ProjectsSection";
+import useAuth from "../../hooks/useAuth";
 
 
 export default function Projects() {
 
     const navigate = useNavigate()
+    const { user } = useAuth()
 
     return (
         <div className='pt-4 space-y-4'>
@@ -18,7 +20,7 @@ export default function Projects() {
                 </button>
             </div>
 
-            <ProjectsSection />
+            <ProjectsSection projects={user?.projects} />
         </div>
     )
 }

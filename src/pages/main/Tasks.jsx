@@ -1,10 +1,12 @@
 import React from 'react'
 import TasksSection from '../../components/TasksSection'
 import { useNavigate } from 'react-router-dom'
+import useAuth from '../../hooks/useAuth'
 
 export default function Tasks() {
 
     const navigate = useNavigate()
+    const { user } = useAuth()
 
     return (
         <div className='pt-4 space-y-4'>
@@ -18,7 +20,7 @@ export default function Tasks() {
                 </button>
             </div>
 
-            <TasksSection />
+            <TasksSection tasks={user?.tasks} />
         </div>
     )
 }

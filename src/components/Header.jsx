@@ -2,10 +2,12 @@ import { Menu } from 'lucide-react'
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import { Link } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 
 export default function Header() {
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const { user } = useAuth()
 
     return (
         <header className='w-full border-b border-gray-300 sticky top-0 bg-white'>
@@ -32,7 +34,7 @@ export default function Header() {
                     <Link to={'/profile'}>
                         <img
                             className='w-10 h-10'
-                            src="https://cdn-icons-png.flaticon.com/512/6858/6858504.png"
+                            src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/6858/6858504.png"}
                             alt=""
                         />
                     </Link>
