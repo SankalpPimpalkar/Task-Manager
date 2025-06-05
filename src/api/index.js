@@ -204,7 +204,23 @@ class APPWRITE {
         }
     }
 
-    async GET_PROJECT_TASKS({ projectId }) {
+    async GET_TASK({ taskId }) {
+        try {
+            const task = await this.database.getDocument(
+                appwriteConfig.databaseId,
+                appwriteConfig.tasksCollectionId,
+                taskId
+            )
+
+            return task
+
+        } catch (error) {
+            console.log("FAILED TO GET TASK", error)
+            throw error;
+        }
+    }
+
+    async GET_PROJECT({ projectId }) {
         try {
             const project = await this.database.getDocument(
                 appwriteConfig.databaseId,
@@ -212,10 +228,10 @@ class APPWRITE {
                 projectId
             )
 
-            return project.tasks
+            return project
 
         } catch (error) {
-            console.log("FAILED TO GET PROJECT TASKS", error)
+            console.log("FAILED TO GET PROJECT", error)
             throw error;
         }
     }

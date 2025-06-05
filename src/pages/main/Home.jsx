@@ -6,21 +6,28 @@ import ProjectsSection from '../../components/ProjectsSection'
 export default function Home() {
 
     const { user } = useAuth();
-    const [statsData, setStatsData] = useState({
-        remaining_tasks: 0,
-        completed_tasks: 0,
-        total_tasks: 0,
-        total_projects: 0,
-    })
+    const [statsData, setStatsData] = useState([])
 
     useEffect(() => {
         if (user) {
-            setStatsData({
-                remaining_tasks: user.tasks?.filter(task => !task.is_completed)?.length || 0,
-                completed_tasks: user.tasks?.filter(task => task.is_completed)?.length || 0,
-                total_tasks: user.tasks?.length || 0,
-                total_projects: user.projects?.length || 0,
-            });
+            setStatsData([
+                {
+                    count: user.tasks?.filter(task => !task.is_completed)?.length || 0,
+                    name: 'Remaining Tasks'
+                },
+                {
+                    count: user.tasks?.filter(task => task.is_completed)?.length || 0,
+                    name: 'Completed Tasks'
+                },
+                {
+                    count: user.tasks?.length || 0,
+                    name: 'Total Tasks'
+                },
+                {
+                    count: user.projects?.length || 0,
+                    name: 'Total Projects'
+                },
+            ]);
         }
     }, [user]);
 

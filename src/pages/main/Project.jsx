@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useEffect, useState, useTransition } from 'react'
 import { useParams } from 'react-router-dom'
 import StatsCard from '../../components/StatsCard'
 import { Ellipsis } from 'lucide-react'
+import appwrite from '../../api'
+import DdMmYYyyFormat from '../../helpers/DdMmYYyyFormat'
 
 const demoMembers = [
     {
@@ -68,16 +70,46 @@ const demoMembers = [
 
 export default function Project() {
 
-    const params = useParams()
+    const { projectId } = useParams()
+    const [project, setProject] = useState(null)
+    const [isPendingGetProjects, startGetProjectsPendingTransition] = useTransition()
+    const [statusData, setStatusData] = useState([])
+
+    useEffect(() => {
+        startGetProjectsPendingTransition(async () => {
+            const resp = await appwrite.GET_PROJECT({ projectId })
+            setProject(resp)
+            console.log(resp)
+
+            setStatusData([
+                {
+                    count: resp?.team.length || 0,
+                    name: 'Team'
+                },
+                {
+                    count: resp?.tasks.filter(task => task.is_completed).length || 0,
+                    name: 'Completed Tasks'
+                },
+                {
+                    count: resp?.tasks.filter(task => !task.is_completed).length || 0,
+                    name: 'Remaining Tasks'
+                },
+                {
+                    count: resp?.tasks.length || 0,
+                    name: 'Total Tasks'
+                },
+            ])
+        })
+    }, [])
 
     return (
         <div className='pt-4 space-y-4'>
             <h2 className='text-2xl font-semibold text-gray-600'>
-                Web Redesign
+                {project?.name}
             </h2>
 
             <p className='text-sm text-gray-500'>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro, vel! Saepe minus aut quia quasi sequi culpa natus quam eum! Aspernatur recusandae porro tempora, aut, deserunt harum veritatis beatae id quidem eligendi ullam accusantium, optio placeat. Voluptas repellendus, obcaecati laborum architecto tempora debitis nam omnis necessitatibus nostrum reiciendis vero voluptatum.
+                {project?.description}
             </p>
 
             <div className='pt-4'>
@@ -85,7 +117,7 @@ export default function Project() {
                     Tasks Overview
                 </h4>
 
-                <StatsCard />
+                <StatsCard statsData={statusData} />
             </div>
 
             <div className='pt-4 space-y-6'>
@@ -110,35 +142,29 @@ export default function Project() {
                                     Occupation
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Joined At
-                                </th>
-                                <th scope="col" class="px-6 py-3">
                                     Actions
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             {
-                                demoMembers.map((member, id) => (
-                                    <tr key={id} class="bg-white border-b border-gray-200 hover:bg-gray-50">
+                                project?.team.map((member) => (
+                                    <tr key={member?.$id} class="bg-white border-b border-gray-200 hover:bg-gray-50">
                                         <td scope="row" class="px-6 py-4 font-medium text-gray-500 whitespace-nowrap">
                                             <img
                                                 className='w-8 h-8'
-                                                src="https://cdn-icons-png.flaticon.com/512/6858/6858504.png"
-                                                alt=""
+                                                src={member?.avatar || "https://cdn-icons-png.flaticon.com/512/6858/6858504.png"}
+                                                alt={member?.name}
                                             />
                                         </td>
                                         <td class="px-6 py-4">
-                                            {member.name}
+                                            {member?.name}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {member.email}
+                                            {member?.email}
                                         </td>
                                         <td class="px-6 py-4">
-                                            {member.occupation}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {member.joinedAt}
+                                            {member?.occupation}
                                         </td>
                                         <td class="px-6 py-4">
                                             <button className='cursor-pointer'>
